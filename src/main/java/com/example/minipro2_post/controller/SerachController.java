@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 /**
  * 게시글 검색
  *
@@ -33,12 +35,14 @@ public class SerachController {
 //    }
 
 
-    // 글쓴이 검색
-    @PostMapping()
-    public ResponseEntity<String> Serach(@RequestBody String findString) {
-        searchService.Serach(findString);
+    // 내용 검색
+    @PostMapping
+    public ResponseEntity<String> Serach(@RequestBody HashMap<String, Object> map) {
+        // 오브젝트를 string으로 변환
+        String findString = map.get("msg").toString();
+        
+        searchService.serach(findString);
         return ResponseEntity.ok("글쓴이 검색");
     }
-    // 내용검색
     // 제목+내용 검색
 }
