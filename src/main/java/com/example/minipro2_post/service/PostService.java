@@ -1,7 +1,9 @@
 package com.example.minipro2_post.service;
 
 import com.example.minipro2_post.dto.PostDto;
+import com.example.minipro2_post.entity.LikeEntity;
 import com.example.minipro2_post.entity.PostEntity;
+import com.example.minipro2_post.repository.LikeRepository;
 import com.example.minipro2_post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -17,6 +19,8 @@ public class PostService {
     // DI
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private LikeRepository likeRepository;
 
     // 테스트용 전체 게시글 출력
     public List<PostDto> getAllPost() {
@@ -64,8 +68,8 @@ public class PostService {
     }
 
     // 게시글 수정
-    public Optional<PostEntity> modifyPost(Long postId, PostDto postDto) {
-        return postRepository.findById(postId)
+    public Optional<PostEntity> modifyPost(Long pid, PostDto postDto) {
+        return postRepository.findById(pid)
                 .map(existingPost -> {
                     if (postDto.getContent() != null) {
                         existingPost.setContent(postDto.getContent());
@@ -82,27 +86,25 @@ public class PostService {
     }
 
     // 게시글 삭제
-    public void deletePost(Long postId) {
-        if(!postRepository.existsById(postId)) {
+    public void deletePost(Long pid) {
+        if(!postRepository.existsById(pid)) {
             throw new RuntimeException("해당 게시글이 존재하지 않습니다.");
         }
-        postRepository.deleteById(postId);
+        postRepository.deleteById(pid);
     }
 
-    // 좋아요 개수 증가
-    public Optional<PostEntity> increaseLike(Long postId) {
-        return postRepository.findById(postId)
+    // 좋아요 토글
+    public Optional<PostEntity> toggleLike(Long pid, Long uid) {
+        Optional<LikeEntity> likeEntity = likeRepository.findByPidAndUid(pid, uid);
+        return postRepository.findById(pid)
                 .map(existingPost -> {
-                    existingPost.setYouLike(existingPost.getYouLike() + 1);
-                    return postRepository.save(existingPost);
-                });
-    }
-
-    // 좋아요 개수 감소
-    public Optional<PostEntity> decreaseLike(Long postId) {
-        return postRepository.findById(postId)
-                .map(existingPost -> {
-                    existingPost.setYouLike(existingPost.getYouLike() - 1);
+                    if (likeEntity.isPresent()) {
+                        existingPost.setYouLike(existingPost.getYouLike() - 1);
+                        likeRepository.delete(likeEntity.get());
+                    } else {
+                        existingPost.setYouLike(existingPost.getYouLike() + 1);
+                        likeRepository.save(new LikeEntity(null, pid, uid));
+                    }
                     return postRepository.save(existingPost);
                 });
     }

@@ -17,14 +17,20 @@
       ```
   - 게시글 수정
     - /post/modify/{pid}
+      ``` JSON
+      {
+        "type": "public",
+        "content": "첫 게시글"
+      }
+      ```  
   - 게시글 삭제
     - /post/delete/{pid}
   - 좋아요 기능
-    - /post/likeUp/{pid}
-    - /post/likeDown/{pid}
+    - /post/toggleLike/{pid}/{uid}
 - 데이터 베이스 정보
-  - 데이터베이스 이름 : mini_post
-  - 테이블 이름 : post
+  - 데이터베이스 이름 : -
+  - 게시글 테이블 이름 : post
+  - 좋아요 테이블 이름 : likes
 
 ## 김강빈
 - 댓글, 검색 시스템 구축

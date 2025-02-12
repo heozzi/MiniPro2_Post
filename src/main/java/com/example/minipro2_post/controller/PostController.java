@@ -43,19 +43,11 @@ public class PostController {
         return ResponseEntity.ok(pid + "번 게시글 삭제 완료");
     }
 
-    // 좋아요 개수 증가
-    @PutMapping("/likeUp/{pid}")
-    public ResponseEntity<String> increaseLike(@PathVariable Long pid) {
-        return postService.increaseLike(pid)
-                .map(post -> ResponseEntity.ok(post.getYouLike() + ": 좋아요 개수 증가"))
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // 좋아요 개수 감소
-    @PutMapping("/likeDown/{pid}")
-    public ResponseEntity<String> decreaseLike(@PathVariable Long pid) {
-        return postService.decreaseLike(pid)
-                .map(post -> ResponseEntity.ok(post.getYouLike() + ": 좋아요 개수 감소"))
+    // 좋아요 토글
+    @PutMapping("/toggleLike/{pid}/{uid}")
+    public ResponseEntity<String> toggleLike(@PathVariable Long pid, @PathVariable Long uid) {
+        return postService.toggleLike(pid, uid)
+                .map(post -> ResponseEntity.ok(post.getYouLike() + ": 좋아요 상태 변경"))
                 .orElse(ResponseEntity.notFound().build());
     }
 }
