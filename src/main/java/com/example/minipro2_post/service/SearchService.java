@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 검색기능
@@ -20,13 +21,13 @@ public class SearchService {
     private PostRepository postRepository;
 
 
-    public void serach(String findString) {
-        PostEntity p = postRepository.findByContent(findString);
-        List<PostEntity> p2 = postRepository.findByContentContaining(findString);
+    public List<PostEntity> serach(String findString) {
+        List<PostEntity> contentSerach = postRepository.findByContentContaining(findString);
 
-        System.out.println(p);
-        for (PostEntity x : p2) {
-            System.out.println(x);
+        for (PostEntity postEntity : contentSerach) {
+            System.out.println(postEntity);
         }
+
+        return contentSerach;
     }
 }

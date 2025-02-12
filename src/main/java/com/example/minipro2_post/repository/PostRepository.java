@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
-    PostEntity findByContent (String findString);
     // Containing을 사용하면 "% %" 효과를 얻게됨
     List<PostEntity> findByContentContaining (String findString);
+
+    // 태그 검색
+    List<PostEntity> findByTagContaining (String findString);
 }

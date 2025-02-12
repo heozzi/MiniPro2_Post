@@ -22,6 +22,7 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
+    // 댓글 추가
     public void addComment(CommentDto commentDto) {
         CommentEntity commentEntity;
         commentEntity = CommentEntity.builder()
@@ -30,7 +31,7 @@ public class CommentService {
                 .build();
         commentRepository.save(commentEntity);
     }
-
+    // 댓글 수정
     public void modifyComment(CommentDto commentDto, Integer cid) {
         Optional<CommentEntity> commentEntity = commentRepository.findById(cid);
         if (commentEntity.isPresent()) {
@@ -41,7 +42,7 @@ public class CommentService {
             throw new IllegalArgumentException("해당 댓글은 존재하지 않습니다.");
         }
     }
-
+    // 댓글 삭제
     public void deleteComment(Integer cid) {
         commentRepository.deleteById(cid);
     }
