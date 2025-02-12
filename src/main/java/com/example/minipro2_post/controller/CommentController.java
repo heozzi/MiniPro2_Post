@@ -1,10 +1,13 @@
 package com.example.minipro2_post.controller;
 
 import com.example.minipro2_post.dto.CommentDto;
+import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 댓글 관련 컨틀로러 진행

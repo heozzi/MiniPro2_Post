@@ -1,11 +1,13 @@
 package com.example.minipro2_post.controller;
 
+import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 게시글 검색
@@ -37,12 +39,13 @@ public class SerachController {
 
     // 내용 검색
     @PostMapping
-    public ResponseEntity<String> Serach(@RequestBody HashMap<String, Object> map) {
+    public ResponseEntity<List<PostEntity>> Serach(@RequestBody HashMap<String, Object> map) {
         // 오브젝트를 string으로 변환
         String findString = map.get("msg").toString();
-        
-        searchService.serach(findString);
-        return ResponseEntity.ok("글쓴이 검색");
+        System.out.println(findString);
+
+        List<PostEntity> postEntity =  searchService.serach(findString);
+        return ResponseEntity.ok(postEntity);
     }
     // 제목+내용 검색
 }

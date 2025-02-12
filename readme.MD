@@ -33,4 +33,10 @@
   - 좋아요 테이블 이름 : likes
 
 ## 김강빈
-- 댓글, 검색 시스템 구축
+- 댓글 시스템
+  - 생성 (/cmt/create/{pid})
+  - 수정 (/cmt/modify/{cid})
+  - 삭제 (/cmt/delete/{cid})
+- 
+- 검색 시스템 구축
+  - 검색(/search)
