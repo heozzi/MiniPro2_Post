@@ -12,7 +12,7 @@
         "type": "private",
         "content": "Bye",
         "tag": "free",
-        "image": "https://picsum.photos/200​"
+        "image": "https://picsum.photos/200"
       }
       ```
   - 게시글 수정

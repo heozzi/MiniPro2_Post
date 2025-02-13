@@ -16,18 +16,19 @@ public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    private Integer cid;
+    private Long cid;
 
-    @JoinColumn(referencedColumnName = "Post", name="P_id",nullable = false)
-    private Integer pid;
+    @ManyToOne
+    @JoinColumn(name="P_id",nullable = false)
+    private PostEntity pid;
 
     @JoinColumn(referencedColumnName = "User", name="U_id",nullable = false)
-    private Integer uid;
+    private Long uid;
 
     private String content;
 
     @Builder
-    public CommentEntity(Integer cid, Integer pid, Integer uid, String content) {
+    public CommentEntity(Long cid, PostEntity pid, Long uid, String content) {
         this.cid = cid;
         this.pid = pid;
         this.uid = uid;
