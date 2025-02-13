@@ -21,6 +21,8 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private LikeRepository likeRepository;
+    @Autowired
+    private PostEventPublisher postEventPublisher;
 
     // 테스트용 전체 게시글 출력
     public List<PostDto> getAllPost() {
@@ -61,7 +63,11 @@ public class PostService {
                     .image(postDto.getImage())
                     .build();
 
-            return postRepository.save(postEntity);
+            // 게시물 생성
+            PostEntity savedPost = postRepository.save(postEntity);
+            // 이벤트 발행
+            postEventPublisher.publishNewPostEvent(savedPost.getPid(), savedPost.getUid(), savedPost.getContent());
+            return savedPost;
         } catch (DataAccessException e) {
             throw new RuntimeException("게시글 저장 중 오류가 발생했습니다.", e);
         }
