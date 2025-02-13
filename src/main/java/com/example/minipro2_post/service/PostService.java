@@ -34,10 +34,11 @@ public class PostService {
                     .gid(post.getGid())
                     .date(post.getDate())
                     .content(post.getContent())
-                    .cid(post.getCid())
                     .like(post.getYouLike())
                     .tag(post.getTag())
                     .image(post.getImage())
+                    // null 체크 후 댓글 개수 설정 (댓글이 없을 경우 0으로 설정)
+                    .commentCount(post.getComments() != null ? post.getComments().size() : 0)
                     .build());
         }
         return postDtos;
@@ -55,7 +56,6 @@ public class PostService {
                     .gid(postDto.getGid() != null ? postDto.getGid() : 0L)
                     .date(postDto.getDate() != null ? postDto.getDate() : LocalDateTime.now())
                     .content(postDto.getContent())
-                    .cid(postDto.getCid() != null ? postDto.getCid() : 0L)
                     .youLike(postDto.getLike() != null ? postDto.getLike() : 0L)
                     .tag(postDto.getTag())
                     .image(postDto.getImage())
