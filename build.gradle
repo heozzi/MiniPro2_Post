@@ -62,6 +62,8 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
+	
+
 
 	// 기타
 //	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
