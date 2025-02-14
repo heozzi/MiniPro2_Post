@@ -3,11 +3,9 @@ package com.example.minipro2_post.service;
 import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 검색기능
@@ -21,7 +19,7 @@ public class SearchService {
     private PostRepository postRepository;
 
 
-    public List<PostEntity> serach(String findString) {
+    public List<PostEntity> searach(String findString) {
         List<PostEntity> contentSerach = postRepository.findByContentContaining(findString);
 
         for (PostEntity postEntity : contentSerach) {
@@ -29,5 +27,13 @@ public class SearchService {
         }
 
         return contentSerach;
+    }
+
+    // 이름 검색
+
+
+    // 태그 검색
+    public List<PostEntity> searchByTag(String tag) {
+        return postRepository.findByTagContaining(tag);
     }
 }
