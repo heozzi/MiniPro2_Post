@@ -1,5 +1,6 @@
 package com.example.minipro2_post.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +23,9 @@ public class PostEntity {
     private LocalDateTime date;         // 작성 날짜
     private String content;             // 게시글 내용
 
-    @OneToMany(mappedBy = "pid",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "pid",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OrderBy("cid asc") // 댓글 번호 순서대로 정렬
     private List<CommentEntity> comments;    // 댓글 리스트
     private Long youLike;               // 좋아요 개수
     private String tag;                 // 태그

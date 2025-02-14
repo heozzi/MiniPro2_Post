@@ -34,6 +34,7 @@ public class CommentService {
         if (postEntity.isPresent()) {
             CommentEntity commentEntity = CommentEntity.builder()
                     .pid(postEntity.get())
+                    .uid(commentDto.getUid())
                     .content(commentDto.getContent())
                     .build();
             commentRepository.save(commentEntity);
@@ -60,12 +61,29 @@ public class CommentService {
     // 댓글 조회
     public List<CommentDto> getAllComments() {
         return commentRepository.findAll().stream()
+                .map(comment ->
+                    CommentDto.builder()
+                            .uid(comment.getUid())
+                            .content(comment.getContent())
+                            .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    // 특정 pid에 해당하는 댓글 조회
+    public List<CommentDto> getPidComments(Long pid) {
+        // PostEntity 찾기
+        PostEntity post = postRepository.findById(pid).orElseThrow();
+
+        List<CommentEntity> comments = commentRepository.findByPid(post);
+        return comments.stream()
                 .map(comment -> {
-                    CommentDto dto = new CommentDto();
-                    dto.setContent(comment.getContent());
-                    dto.setUid(comment.getUid());
-                    return dto;
+                    return CommentDto.builder()
+                            .uid(comment.getUid())
+                            .content(comment.getContent()) // 여기서 오류 발생?
+                            .build();
                 })
                 .collect(Collectors.toList());
     }
+
 }

@@ -1,5 +1,6 @@
 package com.example.minipro2_post.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -11,14 +12,15 @@ import lombok.ToString;
 @Data
 @Table(name="Comment")
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "pid") // pid는 PostEntity와 양방향 관계이므로 제외
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long cid;
 
-    @ManyToOne
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="P_id",nullable = false)
     private PostEntity pid;
 
