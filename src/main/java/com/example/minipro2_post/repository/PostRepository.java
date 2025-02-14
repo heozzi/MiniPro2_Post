@@ -13,8 +13,8 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     // 태그 검색
     List<PostEntity> findByTag (String tag);
 //
-//    // gid 검색
-//    List<PostEntity> findByGid(Long gid);
+    // gid 검색
+    List<PostEntity> findByGid(Long gid);
 //
 //    // uid 검색
 //    List<PostEntity> findbyUid(Long uid);

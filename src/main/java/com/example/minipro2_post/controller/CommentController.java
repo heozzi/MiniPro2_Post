@@ -3,6 +3,7 @@ package com.example.minipro2_post.controller;
 import com.example.minipro2_post.dto.CommentDto;
 import com.example.minipro2_post.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,11 +45,12 @@ public class CommentController {
             @RequestHeader("X-Auth-User") String email,
             @RequestBody CommentDto commentDto) {
 
+        // User 쪽에 uid 요청(gid도 요청 가능)
         Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
                 .post()
                 .uri("/user/checkemail")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue("{\"email\":\"" + email + "\"}")
+                .contentType(MediaType.APPLICATION_JSON) // json 형태로 전달
+                .bodyValue("{\"email\":\"" + email + "\"}") // 요러케도 가능 .bodyValue(Map.of("email", email))
                 .retrieve()
                 .bodyToMono(Long.class);
         Long result = webClient.block(); // 동기 처리
@@ -77,5 +79,18 @@ public class CommentController {
     public ResponseEntity<List<CommentDto>> getAllComments() {
         List<CommentDto> comments = commentService.getAllComments();
         return ResponseEntity.ok(comments);
+    }
+    // 특정 pid로 댓글 조회 진행
+    @GetMapping("/getPidComments/{pid}")
+    public ResponseEntity<?> getPidComments(@PathVariable Long pid) {
+        try {
+            List<CommentDto> comments = commentService.getPidComments(pid);
+            if (comments.isEmpty()) {
+                return ResponseEntity.ok("해당 게시글에 댓글이 없습니다.");
+            }
+            return ResponseEntity.ok(comments);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 게시글이 존재하지 않습니다.");
+        }
     }
 }

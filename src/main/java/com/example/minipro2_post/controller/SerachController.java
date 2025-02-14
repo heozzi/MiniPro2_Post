@@ -1,7 +1,10 @@
 package com.example.minipro2_post.controller;
 
 import com.example.minipro2_post.entity.PostEntity;
+import com.example.minipro2_post.repository.PostRepository;
+import com.example.minipro2_post.service.PostService;
 import com.example.minipro2_post.service.SearchService;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,9 @@ import java.util.List;
 public class SerachController {
     @Autowired
     private SearchService searchService;
+
+    @Autowired
+    private PostRepository postRepository;
 
     // 메인 페이지 테스트
     @GetMapping
@@ -70,5 +76,25 @@ public class SerachController {
             return ResponseEntity.ok("검색 결과가 없습니다");
         }
         return ResponseEntity.ok(postEntity);
+    }
+
+    // 태그검색 진행
+    @PostMapping("/tag")
+    public ResponseEntity<List<PostEntity>> tagSearch(@RequestBody HashMap<String, Object> map) {
+        String tag = map.get("tag").toString();
+        System.out.println(tag);
+        List<PostEntity> posts= postRepository.findByTag(tag);
+        System.out.println(posts);
+        return ResponseEntity.ok(posts);
+    }
+
+    // 그룹 검색 진행
+    @PostMapping("/gid")
+    public ResponseEntity<List<PostEntity>> gidSearch(@RequestBody HashMap<String, Object> map) {
+        Long gid = Long.parseLong(map.get("gid").toString());
+        System.out.println(gid);
+        List<PostEntity> posts= postRepository.findByGid(gid);
+        System.out.println(posts);
+        return ResponseEntity.ok(posts);
     }
 }
