@@ -6,7 +6,12 @@ import com.example.minipro2_post.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.net.http.HttpClient;
 import java.util.List;
 
 @RestController
@@ -15,6 +20,8 @@ public class PostController {
     // DI
     @Autowired
     private PostService postService;
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     // 테스트용 전체 게시글 출력
     @GetMapping("/all")
@@ -24,7 +31,12 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping("/create")
-    public ResponseEntity<PostEntity> createPost(@RequestBody PostDto postDto) {
+    public ResponseEntity<PostEntity> createPost(@RequestBody PostDto postDto,
+                                                 @RequestHeader("X-Auth-User") String email) {
+//        Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
+//                .post().uri("/user/checkemail").body(BodyInserters.fromFormData("email",email)).retrieve()
+//                .bodyToMono(Long.class);
+//        webClient.subscribe(res -> System.out.println(res));
         return ResponseEntity.ok(postService.createPost(postDto));
     }
 
