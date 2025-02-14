@@ -3,9 +3,11 @@ package com.example.minipro2_post.controller;
 import com.example.minipro2_post.dto.CommentDto;
 import com.example.minipro2_post.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -27,6 +29,9 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
     // cmt 페이지 확인
     @GetMapping
     public ResponseEntity<String> mainPage() {
@@ -36,8 +41,20 @@ public class CommentController {
     @PostMapping("create/{pid}")
     public ResponseEntity<String> createComment(
             @PathVariable Long pid,
+            @RequestHeader("X-Auth-User") String email,
             @RequestBody CommentDto commentDto) {
-        commentService.addComment(commentDto, pid);
+
+        Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
+                .post()
+                .uri("/user/checkemail")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("{\"email\":\"" + email + "\"}")
+                .retrieve()
+                .bodyToMono(Long.class);
+        Long result = webClient.block(); // 동기 처리
+
+
+        commentService.addComment(commentDto, pid,result);
         return ResponseEntity.ok("댓글 저장완료");
     }
     // 댓글 수정 진행
@@ -60,19 +77,5 @@ public class CommentController {
     public ResponseEntity<List<CommentDto>> getAllComments() {
         List<CommentDto> comments = commentService.getAllComments();
         return ResponseEntity.ok(comments);
-    }
-
-    // 특정 pid로 댓글 조회 진행
-    @GetMapping("/getPidComments/{pid}")
-    public ResponseEntity<?> getPidComments(@PathVariable Long pid) {
-        try {
-            List<CommentDto> comments = commentService.getPidComments(pid);
-            if (comments.isEmpty()) {
-                return ResponseEntity.ok("해당 게시글에 댓글이 없습니다.");
-            }
-            return ResponseEntity.ok(comments);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 게시글이 존재하지 않습니다.");
-        }
     }
 }
