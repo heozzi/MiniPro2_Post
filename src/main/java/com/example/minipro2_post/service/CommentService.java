@@ -34,6 +34,7 @@ public class CommentService {
         if (postEntity.isPresent()) {
             CommentEntity commentEntity = CommentEntity.builder()
                     .pid(postEntity.get())
+                    .uid(commentDto.getUid())
                     .content(commentDto.getContent())
                     .build();
             commentRepository.save(commentEntity);
