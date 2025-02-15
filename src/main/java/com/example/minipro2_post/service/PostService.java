@@ -49,8 +49,8 @@ public class PostService {
     // 게시글 생성
     public PostEntity createPost(PostDto postDto, Long result) {
         try {
-            if(postDto.getUid() == null || postDto.getContent() == null) {
-                throw new RuntimeException("작성자 번호와 게시글 내용은 필수입니다.");
+            if(postDto.getContent() == null) {
+                throw new RuntimeException("게시글 내용은 필수입니다.");
             }
             PostEntity postEntity = PostEntity.builder()
                     .uid(result)
@@ -74,36 +74,34 @@ public class PostService {
     }
 
     // 게시글 수정
-    public Optional<PostEntity> modifyPost(Long pid, PostDto postDto) {
+    public Optional<PostEntity> modifyPost(Long pid, PostDto postDto, Long result) {
         return postRepository.findById(pid)
-                .map(existingPost -> {
-                    if (postDto.getContent() != null) {
-                        existingPost.setContent(postDto.getContent());
-                    }
-                    if (postDto.getTag() != null) {
-                        existingPost.setTag(postDto.getTag());
-                    }
-                    if (postDto.getType() != null) {
-                        existingPost.setType(postDto.getType());
-                    }
-                    existingPost.setDate(LocalDateTime.now()); // 수정 시간 업데이트
-                    return postRepository.save(existingPost);
+                .filter(postEntity -> postEntity.getUid().equals(result))
+                .map(post -> {
+                    Optional.ofNullable(postDto.getContent()).ifPresent(post::setContent);
+                    Optional.ofNullable(postDto.getTag()).ifPresent(post::setTag);
+                    Optional.ofNullable(postDto.getType()).ifPresent(post::setType);
+                    return postRepository.save(post);
                 });
     }
 
     // 게시글 삭제
-    public void deletePost(Long pid) {
-        if(!postRepository.existsById(pid)) {
-            throw new RuntimeException("해당 게시글이 존재하지 않습니다.");
-        }
-        postRepository.deleteById(pid);
+    public boolean deletePost(Long pid, Long result) {
+        return postRepository.findById(pid)
+                .filter(postEntity -> postEntity.getUid().equals(result)) // UID가 일치하는지 필터링
+                .map(post -> {
+                    postRepository.delete(post); // 게시글 삭제
+                    return true;
+                })
+                .orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않거나 삭제할 권한이 없습니다."));
     }
 
     // 좋아요 토글
     public Optional<PostEntity> toggleLike(Long pid, Long uid) {
-        Optional<LikeEntity> likeEntity = likeRepository.findByPidAndUid(pid, uid);
         return postRepository.findById(pid)
                 .map(existingPost -> {
+                    Optional<LikeEntity> likeEntity = likeRepository.findByPidAndUid(pid, uid);
+
                     if (likeEntity.isPresent()) {
                         existingPost.setYouLike(existingPost.getYouLike() - 1);
                         likeRepository.delete(likeEntity.get());
@@ -111,6 +109,7 @@ public class PostService {
                         existingPost.setYouLike(existingPost.getYouLike() + 1);
                         likeRepository.save(new LikeEntity(null, pid, uid));
                     }
+
                     return postRepository.save(existingPost);
                 });
     }
