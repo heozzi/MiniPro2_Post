@@ -47,13 +47,13 @@ public class PostService {
     }
 
     // 게시글 생성
-    public PostEntity createPost(PostDto postDto) {
+    public PostEntity createPost(PostDto postDto, Long result) {
         try {
             if(postDto.getUid() == null || postDto.getContent() == null) {
                 throw new RuntimeException("작성자 번호와 게시글 내용은 필수입니다.");
             }
             PostEntity postEntity = PostEntity.builder()
-                    .uid(postDto.getUid())
+                    .uid(result)
                     .type(postDto.getType())
                     .gid(postDto.getGid() != null ? postDto.getGid() : 0L)
                     .date(postDto.getDate() != null ? postDto.getDate() : LocalDateTime.now())

@@ -3,9 +3,14 @@ package com.example.minipro2_post.controller;
 import com.example.minipro2_post.dto.PostDto;
 import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.service.PostService;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -16,6 +21,9 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
     // 테스트용 전체 게시글 출력
     @GetMapping("/all")
     public ResponseEntity<List<PostDto>> getAllPost() {
@@ -24,8 +32,20 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping("/create")
-    public ResponseEntity<PostEntity> createPost(@RequestBody PostDto postDto) {
-        return ResponseEntity.ok(postService.createPost(postDto));
+    @JsonBackReference
+    public ResponseEntity<PostEntity> createPost(@RequestBody PostDto postDto,
+                                                 @RequestHeader("X-Auth-User") String email) {
+        Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
+                .post()
+                .uri("/user/checkemail")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("{\"email\":\"" + email + "\"}")
+                .retrieve()
+                .bodyToMono(Long.class);
+        Long result = webClient.block(); // 동기 처리
+//        System.out.println("응답 받은 Long 값: " + result);
+
+        return ResponseEntity.ok(postService.createPost(postDto,result));
     }
 
     // 게시글 수정

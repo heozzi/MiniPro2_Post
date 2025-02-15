@@ -29,13 +29,14 @@ public class CommentService {
     private PostRepository postRepository;
 
     // 댓글 추가
-    public void addComment(CommentDto commentDto, Long pid) {
+    public void addComment(CommentDto commentDto, Long pid, Long uid) {
         Optional<PostEntity> postEntity = postRepository.findById(pid);
         if (postEntity.isPresent()) {
             CommentEntity commentEntity = CommentEntity.builder()
                     .pid(postEntity.get())
                     .uid(commentDto.getUid())
                     .content(commentDto.getContent())
+                    .uid(uid)
                     .build();
             commentRepository.save(commentEntity);
         } else {

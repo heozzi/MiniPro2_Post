@@ -24,7 +24,7 @@ public class CommentEntity {
     @JoinColumn(name="P_id",nullable = false)
     private PostEntity pid;
 
-    @JoinColumn(referencedColumnName = "User", name="U_id",nullable = false)
+    @JoinColumn(referencedColumnName = "mini_user.members", name="U_id",nullable = false)
     private Long uid;
 
     private String content;

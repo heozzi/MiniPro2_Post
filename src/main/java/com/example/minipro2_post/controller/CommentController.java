@@ -4,8 +4,11 @@ import com.example.minipro2_post.dto.CommentDto;
 import com.example.minipro2_post.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -27,6 +30,9 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
     // cmt 페이지 확인
     @GetMapping
     public ResponseEntity<String> mainPage() {
@@ -36,8 +42,21 @@ public class CommentController {
     @PostMapping("create/{pid}")
     public ResponseEntity<String> createComment(
             @PathVariable Long pid,
+            @RequestHeader("X-Auth-User") String email,
             @RequestBody CommentDto commentDto) {
-        commentService.addComment(commentDto, pid);
+
+        // User 쪽에 uid 요청(gid도 요청 가능)
+        Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
+                .post()
+                .uri("/user/checkemail")
+                .contentType(MediaType.APPLICATION_JSON) // json 형태로 전달
+                .bodyValue("{\"email\":\"" + email + "\"}") // 요러케도 가능 .bodyValue(Map.of("email", email))
+                .retrieve()
+                .bodyToMono(Long.class);
+        Long result = webClient.block(); // 동기 처리
+
+
+        commentService.addComment(commentDto, pid,result);
         return ResponseEntity.ok("댓글 저장완료");
     }
     // 댓글 수정 진행
@@ -61,7 +80,6 @@ public class CommentController {
         List<CommentDto> comments = commentService.getAllComments();
         return ResponseEntity.ok(comments);
     }
-
     // 특정 pid로 댓글 조회 진행
     @GetMapping("/getPidComments/{pid}")
     public ResponseEntity<?> getPidComments(@PathVariable Long pid) {
