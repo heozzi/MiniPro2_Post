@@ -14,4 +14,6 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     // gid 검색
     List<PostEntity> findByGid(Long gid);
+
+    List<PostEntity> findByUid(Long uid);
 }

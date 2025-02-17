@@ -49,8 +49,17 @@ public class PostService {
     // 게시글 생성
     public PostEntity createPost(PostDto postDto, Long result) {
         try {
+            // 게시글 내용, 타입이 null인 경우 예외 처리
             if(postDto.getContent() == null) {
                 throw new RuntimeException("게시글 내용은 필수입니다.");
+            } else if(postDto.getType() == null) {
+                throw new RuntimeException("게시글 타입은 필수입니다.");
+            }
+            // 게시글 타입이 public, group, groupOnly 중 하나가 아닌 경우 예외 처리
+            else if(!postDto.getType().equals("public")
+                    && !postDto.getType().equals("group")
+                    &&!postDto.getType().equals("groupOnly")) {
+                throw new RuntimeException("게시글 타입이 옳지 않습니다.");
             }
             PostEntity postEntity = PostEntity.builder()
                     .uid(result)
@@ -81,6 +90,7 @@ public class PostService {
                     Optional.ofNullable(postDto.getContent()).ifPresent(post::setContent);
                     Optional.ofNullable(postDto.getTag()).ifPresent(post::setTag);
                     Optional.ofNullable(postDto.getType()).ifPresent(post::setType);
+                    Optional.ofNullable(postDto.getImage()).ifPresent(post::setImage);
                     return postRepository.save(post);
                 });
     }
