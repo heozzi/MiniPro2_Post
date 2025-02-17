@@ -31,7 +31,6 @@ public class SearchService {
 
     // 이름 검색
 
-
     // 태그 검색
     public List<PostEntity> searchByTag(String tag) {
         return postRepository.findByTag(tag);
