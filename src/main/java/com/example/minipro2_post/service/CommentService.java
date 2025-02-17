@@ -31,7 +31,11 @@ public class CommentService {
     // 댓글 추가
     public void addComment(CommentDto commentDto, Long pid, Long uid) {
         Optional<PostEntity> postEntity = postRepository.findById(pid);
+
         if (postEntity.isPresent()) {
+            if (!postEntity.get().getUid().equals(uid)) {
+                throw new IllegalArgumentException("UID가 일치하지 않습니다!");
+            }
             CommentEntity commentEntity = CommentEntity.builder()
                     .pid(postEntity.get())
                     .uid(commentDto.getUid())
@@ -44,9 +48,12 @@ public class CommentService {
         }
     }
     // 댓글 수정
-    public void modifyComment(CommentDto commentDto, Long cid) {
+    public void modifyComment(CommentDto commentDto, Long cid, Long uid) {
         Optional<CommentEntity> commentEntity = commentRepository.findById(cid);
         if (commentEntity.isPresent()) {
+            if (!commentEntity.get().getUid().equals(uid)) {
+                throw new IllegalArgumentException("UID가 일치하지 않습니다!");
+            }
             commentEntity.get().setContent(commentDto.getContent());
             commentRepository.save(commentEntity.get());
         }
@@ -55,8 +62,14 @@ public class CommentService {
         }
     }
     // 댓글 삭제
-    public void deleteComment(Long cid) {
-        commentRepository.deleteById(cid);
+    public void deleteComment(Long cid, Long uid) {
+        Optional<CommentEntity> commentEntity = commentRepository.findById(cid);
+        if (commentEntity.isPresent()) {
+            if (!commentEntity.get().getUid().equals(uid)) {
+                throw new IllegalArgumentException("UID가 일치하지 않습니다!");
+            }
+            commentRepository.deleteById(cid);
+        }
     }
 
     // 댓글 조회

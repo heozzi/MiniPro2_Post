@@ -53,24 +53,45 @@ public class CommentController {
                 .bodyValue("{\"email\":\"" + email + "\"}") // 요러케도 가능 .bodyValue(Map.of("email", email))
                 .retrieve()
                 .bodyToMono(Long.class);
-        Long result = webClient.block(); // 동기 처리
+        Long uid = webClient.block(); // 동기 처리
 
 
-        commentService.addComment(commentDto, pid,result);
+        commentService.addComment(commentDto, pid,uid);
         return ResponseEntity.ok("댓글 저장완료");
     }
     // 댓글 수정 진행
-    @PostMapping("modify/{cid}")
+    @PutMapping("modify/{cid}")
     public ResponseEntity<String> modifyComment(
-            @PathVariable Long cid
-            , @RequestBody CommentDto commentDto) {
-        commentService.modifyComment(commentDto,cid);
+            @PathVariable Long cid,
+            @RequestHeader("X-Auth-User") String email,
+            @RequestBody CommentDto commentDto) {
+
+        Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
+                .post()
+                .uri("/user/checkemail")
+                .contentType(MediaType.APPLICATION_JSON) // json 형태로 전달
+                .bodyValue("{\"email\":\"" + email + "\"}") // 요러케도 가능 .bodyValue(Map.of("email", email))
+                .retrieve()
+                .bodyToMono(Long.class);
+        Long uid = webClient.block();
+
+        commentService.modifyComment(commentDto,cid,uid);
         return ResponseEntity.ok("수정완료");
     }
     // 댓글 삭제 진행
-    @PostMapping("delete/{cid}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long cid) {
-        commentService.deleteComment(cid);
+    @DeleteMapping("delete/{cid}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long cid,
+                                                @RequestHeader("X-Auth-User") String email) {
+        Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
+                .post()
+                .uri("/user/checkemail")
+                .contentType(MediaType.APPLICATION_JSON) // json 형태로 전달
+                .bodyValue("{\"email\":\"" + email + "\"}") // 요러케도 가능 .bodyValue(Map.of("email", email))
+                .retrieve()
+                .bodyToMono(Long.class);
+        Long uid = webClient.block();
+
+        commentService.deleteComment(cid,uid);
         return ResponseEntity.ok("댓글 삭제완료");
     }
 
