@@ -2,9 +2,7 @@ package com.example.minipro2_post.controller;
 
 import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.repository.PostRepository;
-import com.example.minipro2_post.service.PostService;
 import com.example.minipro2_post.service.SearchService;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,25 +19,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/search")
-public class SerachController {
+public class SearchController {
     @Autowired
     private SearchService searchService;
 
     @Autowired
     private PostRepository postRepository;
 
+
     // 메인 페이지 테스트
     @GetMapping
     public ResponseEntity<String> mainPage() {
         return ResponseEntity.ok("HELLO WORLD");
     }
-
-    // 제목 검색
-//    @PostMapping
-//    public ResponseEntity<String> titleSerach (@RequestBody String title) {
-//        return ResponseEntity.ok("제목 검색");
-//    }
-
 
 //    // 내용 검색
 //    @PostMapping
@@ -52,33 +44,35 @@ public class SerachController {
 //        return ResponseEntity.ok(postEntity);
 //    }
 
-    // 글쓴이 검색
-
-
     @PostMapping
     public ResponseEntity<?> search(@RequestBody HashMap<String, Object> map) {
         // 검색 유형을 확인
-        // 태그 검색인지, 내용 검색인지 확인
-        // type: tag | msg
-        // msg: 검색어
         String type = map.get("type").toString();
         String searchString = map.get("msg").toString();
         System.out.println(type + ": " + searchString);
 
-        List<PostEntity> postEntity;
-        if ("tag".equals(type)) {
-            postEntity = searchService.searchByTag(searchString);
-        } else {
-            postEntity = searchService.searach(searchString);
+        List<PostEntity> postEntity = null;
+
+        try {
+            if ("tag".equals(type)) {
+                postEntity = searchService.searchByTag(searchString);
+            } else if ("msg".equals(type)) {
+                postEntity = searchService.search(searchString);
+            } else if ("email".equals(type)) {
+                postEntity = searchService.searchByEmail(searchString);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok("해당 이메일을 가진 사용자가 없습니다.");
         }
 
-        if (postEntity.isEmpty()) {
+        if (postEntity == null || postEntity.isEmpty()) {
             return ResponseEntity.ok("검색 결과가 없습니다");
         }
         return ResponseEntity.ok(postEntity);
     }
 
-    // 태그검색 진행
+
+    // 피드의 태그검색 진행
     @PostMapping("/tag")
     public ResponseEntity<List<PostEntity>> tagSearch(@RequestBody HashMap<String, Object> map) {
         String tag = map.get("tag").toString();
@@ -88,7 +82,7 @@ public class SerachController {
         return ResponseEntity.ok(posts);
     }
 
-    // 그룹 검색 진행
+    // 피드의 그룹 검색 진행
     @PostMapping("/gid")
     public ResponseEntity<List<PostEntity>> gidSearch(@RequestBody HashMap<String, Object> map) {
         Long gid = Long.parseLong(map.get("gid").toString());
