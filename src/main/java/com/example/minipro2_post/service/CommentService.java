@@ -33,9 +33,6 @@ public class CommentService {
         Optional<PostEntity> postEntity = postRepository.findById(pid);
 
         if (postEntity.isPresent()) {
-            if (!postEntity.get().getUid().equals(uid)) {
-                throw new IllegalArgumentException("UID가 일치하지 않습니다!");
-            }
             CommentEntity commentEntity = CommentEntity.builder()
                     .pid(postEntity.get())
                     .uid(commentDto.getUid())
