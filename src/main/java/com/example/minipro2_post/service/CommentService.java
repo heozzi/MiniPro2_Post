@@ -3,6 +3,7 @@ package com.example.minipro2_post.service;
 import com.example.minipro2_post.dto.CommentDto;
 import com.example.minipro2_post.entity.CommentEntity;
 import com.example.minipro2_post.entity.PostEntity;
+import com.example.minipro2_post.kafka.CommentEventPublisher;
 import com.example.minipro2_post.repository.CommentRepository;
 import com.example.minipro2_post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class CommentService {
     private CommentRepository commentRepository;
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private CommentEventPublisher commentEventPublisher;
 
     // 댓글 추가
     public void addComment(CommentDto commentDto, Long pid, Long uid) {
@@ -40,6 +43,8 @@ public class CommentService {
                     .uid(uid)
                     .build();
             commentRepository.save(commentEntity);
+            // 이벤트 발행
+            commentEventPublisher.publishCommentEvent(commentEntity);
         } else {
             throw new IllegalArgumentException("해당 게시글은 존재하지 않습니다.");
         }

@@ -3,6 +3,8 @@ package com.example.minipro2_post.service;
 import com.example.minipro2_post.dto.PostDto;
 import com.example.minipro2_post.entity.LikeEntity;
 import com.example.minipro2_post.entity.PostEntity;
+import com.example.minipro2_post.kafka.LikeEventPublisher;
+import com.example.minipro2_post.kafka.PostEventPublisher;
 import com.example.minipro2_post.repository.LikeRepository;
 import com.example.minipro2_post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class PostService {
     private LikeRepository likeRepository;
     @Autowired
     private PostEventPublisher postEventPublisher;
+    @Autowired
+    private LikeEventPublisher likeEventPublisher;
 
     // 테스트용 전체 게시글 출력
     public List<PostDto> getAllPost() {
@@ -75,7 +79,7 @@ public class PostService {
             // 게시물 생성
             PostEntity savedPost = postRepository.save(postEntity);
             // 이벤트 발행
-            postEventPublisher.publishNewPostEvent(savedPost.getPid(), savedPost.getUid(), savedPost.getContent());
+            postEventPublisher.publishPostEvent(savedPost);
             return savedPost;
         } catch (DataAccessException e) {
             throw new RuntimeException("게시글 저장 중 오류가 발생했습니다.", e);
@@ -126,6 +130,8 @@ public class PostService {
                     } else {
                         existingPost.setYouLike(existingPost.getYouLike() + 1);
                         likeRepository.save(new LikeEntity(null, pid, uid));
+                        // 이벤트 발행
+                        likeEventPublisher.publishLikeEvent(pid, uid);
                     }
 
                     return postRepository.save(existingPost);
