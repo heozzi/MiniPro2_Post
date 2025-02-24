@@ -86,6 +86,18 @@ public class PostController {
         }
     }
 
+    // 특정 사용자의 모든 게시글 및 관련 데이터 삭제 (회원탈퇴용)
+    @DeleteMapping("/deleteByUser/{uid}")
+    public ResponseEntity<String> deletePostsByUser(@PathVariable Long uid) {
+        try {
+            int deletedCount = postService.deleteAllByUser(uid);
+            return ResponseEntity.ok(uid + "번 사용자의 게시글 " + deletedCount + "개와 관련 데이터가 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("사용자 데이터 삭제 중 오류 발생: " + e.getMessage());
+        }
+    }
+
     // 좋아요 토글
     @PutMapping("/toggleLike/{pid}")
     public ResponseEntity<String> toggleLike(@PathVariable Long pid, @RequestHeader("X-Auth-User") String email) {

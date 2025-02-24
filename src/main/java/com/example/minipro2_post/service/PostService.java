@@ -5,8 +5,10 @@ import com.example.minipro2_post.entity.LikeEntity;
 import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.kafka.LikeEventPublisher;
 import com.example.minipro2_post.kafka.PostEventPublisher;
+import com.example.minipro2_post.repository.CommentRepository;
 import com.example.minipro2_post.repository.LikeRepository;
 import com.example.minipro2_post.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private LikeRepository likeRepository;
+    @Autowired
+    private CommentRepository commentRepository;
     @Autowired
     private PostEventPublisher postEventPublisher;
     @Autowired
@@ -116,6 +120,46 @@ public class PostService {
                     return true;
                 })
                 .orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않거나 삭제할 권한이 없습니다."));
+    }
+
+    // 특정 사용자의 모든 게시글 및 관련 댓글 삭제 (회원탈퇴용)
+    // 특정 사용자의 모든 게시글 및 관련 데이터 삭제 (회원탈퇴용)
+    @Transactional
+    public int deleteAllByUser(Long uid) {
+        int deletedPostsCount = 0;
+
+        try {
+            // 1. 해당 사용자가 작성한 게시글 찾기
+            List<PostEntity> userPosts = postRepository.findByUid(uid);
+            deletedPostsCount = userPosts.size();
+
+            // 2. 해당 사용자가 작성한 다른 게시글에 달린 댓글 삭제
+            for (PostEntity post : userPosts) {
+                Long postId = post.getPid();
+                System.out.println("삭제할 게시글 ID: " + postId);
+
+                // 게시글의 좋아요 정보 삭제
+                likeRepository.deleteByPid(postId);
+            }
+
+            // 3. 다른 사용자 게시글에 작성한 댓글 삭제
+            commentRepository.deleteByUid(uid);
+            System.out.println("사용자 " + uid + "가 작성한 댓글 삭제 완료");
+
+            // 4. 해당 사용자의 모든 좋아요 정보 삭제
+            likeRepository.deleteByUid(uid);
+            System.out.println("사용자 " + uid + "의 좋아요 정보 삭제 완료");
+
+            // 5. 해당 사용자의 모든 게시글 삭제
+            // CascadeType.REMOVE 설정이 되어 있으면 연관된 댓글은 자동 삭제됨
+            postRepository.deleteByUid(uid);
+            System.out.println("사용자 " + uid + "의 게시글 삭제 완료");
+
+            return deletedPostsCount;
+        } catch (Exception e) {
+            System.err.println("사용자 데이터 삭제 중 오류: " + e.getMessage());
+            throw new RuntimeException("사용자 데이터 삭제 중 오류 발생: " + e.getMessage(), e);
+        }
     }
 
     // 좋아요 토글
