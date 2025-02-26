@@ -65,10 +65,11 @@ public class PostService {
                     &&!postDto.getType().equals("groupOnly")) {
                 throw new RuntimeException("게시글 타입이 옳지 않습니다.");
             }
+
             PostEntity postEntity = PostEntity.builder()
                     .uid(result)
                     .type(postDto.getType())
-                    .gid(postDto.getGid() != null ? postDto.getGid() : 0L)
+                    .gid(postDto.getType().equals("public") ?  0L : postDto.getGid())
                     .date(postDto.getDate() != null ? postDto.getDate() : LocalDateTime.now())
                     .content(postDto.getContent())
                     .youLike(postDto.getLike() != null ? postDto.getLike() : 0L)

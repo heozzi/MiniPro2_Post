@@ -4,9 +4,13 @@ import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.repository.PostRepository;
 import com.example.minipro2_post.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,6 +29,9 @@ public class SearchController {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
 
     // 메인 페이지 테스트
@@ -54,6 +61,16 @@ public class SearchController {
 
         List<PostEntity> postEntity = null;
 
+//        Mono<List> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
+//                .get()
+//                .uri(uriBuilder -> uriBuilder.path("/user/checkemail")
+//                        .queryParam("email",email).build())
+//                .retrieve()
+//                .bodyToMono(List.class);
+//        List<Long> result = webClient.block();
+
+//        System.out.println(result);
+
         try {
             if ("tag".equals(type)) {
                 postEntity = searchService.searchByTag(searchString);
@@ -64,6 +81,15 @@ public class SearchController {
             }
         } catch (Exception e) {
             return ResponseEntity.ok("해당 이메일을 가진 사용자가 없습니다.");
+        }
+        List<Long> postIds = new ArrayList<>();
+        for (PostEntity postEntity1 : postEntity) {
+            if (!postEntity1.getGid().equals(0)) {
+                postIds.add(postEntity1.getGid());
+            }
+        }
+        for (int i = postIds.size() - 1; i >= 0; i--) {
+            postEntity.remove(postIds.get(i));
         }
 
         if (postEntity == null || postEntity.isEmpty()) {
