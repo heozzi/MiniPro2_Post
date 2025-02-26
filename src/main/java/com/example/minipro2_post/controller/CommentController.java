@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,8 +56,17 @@ public class CommentController {
                 .bodyToMono(Long.class);
         Long uid = webClient.block(); // 동기 처리
 
+        List<Long> gid = new ArrayList<>();
+//        // GID 확인
+//        Mono<List> webClient_2 = webClientBuilder.baseUrl("http://localhost:8083").build()
+//                .get()
+//                .uri(uriBuilder -> uriBuilder.path("/user/checkemail")
+//                        .queryParam("email",email).build())
+//                .retrieve()
+//                .bodyToMono(List.class);
+//        List<Long> gid = webClient_2.block();
 
-        commentService.addComment(commentDto, pid,uid);
+        commentService.addComment(commentDto, pid,uid,gid);
         return ResponseEntity.ok("댓글 저장완료");
     }
     // 댓글 수정 진행
