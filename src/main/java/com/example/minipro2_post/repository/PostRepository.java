@@ -11,9 +11,6 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     // Containing을 사용하면 "% %" 효과를 얻게됨
     List<PostEntity> findByContentContaining (String findString);
 
-    // 태그 검색
-    List<PostEntity> findByTag (String tag);
-
     // gid 검색
     List<PostEntity> findByGid(Long gid);
 

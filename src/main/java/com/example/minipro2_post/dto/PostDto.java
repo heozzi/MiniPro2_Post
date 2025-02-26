@@ -3,6 +3,7 @@ package com.example.minipro2_post.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class PostDto {
@@ -13,14 +14,14 @@ public class PostDto {
     private LocalDateTime date;
     private String content;
     private Long like;
-    private String tag;
+    private List<String> tags;
     private String image;
     private Integer commentCount;   // 댓글 개수
 
     @Builder
     public PostDto
             (Long pid, Long uid, String type, Long gid,
-             LocalDateTime date, String content, Long like, String tag, String image, Integer commentCount) {
+             LocalDateTime date, String content, Long like, List<String> tags, String image, Integer commentCount) {
         this.pid = pid;
         this.uid = uid;
         this.type = type;
@@ -28,7 +29,7 @@ public class PostDto {
         this.date = date;
         this.content = content;
         this.like = like;
-        this.tag = tag;
+        this.tags = tags;
         this.image = image;
         this.commentCount = commentCount;
     }
