@@ -3,7 +3,6 @@ package com.example.minipro2_post.controller;
 import com.example.minipro2_post.dto.CommentDto;
 import com.example.minipro2_post.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -57,19 +56,16 @@ public class CommentController {
                 .bodyToMono(Long.class);
         Long uid = webClient.block(); // 동기 처리
 
-//        List<Long> gid = new ArrayList<>();
-        // GID 확인
-        Mono<List<Long>> webClient_2 = webClientBuilder.baseUrl("http://localhost:8083").build()
-                .get()
-                .uri(uriBuilder -> uriBuilder.path("/user/groupCheck")
-                        .queryParam("email", email).build())
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<Object>>() {}) // List<Object>로 먼저 받아서
-                .map(list -> list.stream()
-                        .map(obj -> ((Number) obj).longValue()) // Object → Number → Long 변환
-                        .toList());
+        List<Long> gid = new ArrayList<>();
+//        // GID 확인
+//        Mono<List> webClient_2 = webClientBuilder.baseUrl("http://localhost:8083").build()
+//                .get()
+//                .uri(uriBuilder -> uriBuilder.path("/user/checkemail")
+//                        .queryParam("email",email).build())
+//                .retrieve()
+//                .bodyToMono(List.class);
+//        List<Long> gid = webClient_2.block();
 
-        List<Long> gid = webClient_2.block();
         commentService.addComment(commentDto, pid,uid,gid);
         return ResponseEntity.ok("댓글 저장완료");
     }
