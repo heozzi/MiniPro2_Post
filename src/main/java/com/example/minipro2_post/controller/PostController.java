@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/post")
 public class PostController {
@@ -25,11 +23,6 @@ public class PostController {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
-    // 테스트용 전체 게시글 출력
-    @GetMapping("/all")
-    public ResponseEntity<List<PostDto>> getAllPost() {
-        return ResponseEntity.ok(postService.getAllPost());
-    }
 
     // 게시글 작성
     @PostMapping("/create")

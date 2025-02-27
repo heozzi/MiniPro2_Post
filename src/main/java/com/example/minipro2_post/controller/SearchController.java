@@ -55,9 +55,10 @@ public class SearchController {
         List<PostEntity> postEntity = null;
 
         try {
-            if ("tag".equals(type)) {
+            if("tag".equals(type)) {
                 postEntity = searchService.searchByTag(searchString);
-            } else if ("msg".equals(type)) {
+            } else if
+            ("msg".equals(type)) {
                 postEntity = searchService.search(searchString);
             } else if ("email".equals(type)) {
                 postEntity = searchService.searchByEmail(searchString);
@@ -73,15 +74,18 @@ public class SearchController {
     }
 
 
-    // 피드의 태그검색 진행
+    // 피드의 태그 검색 진행
     @PostMapping("/tag")
     public ResponseEntity<List<PostEntity>> tagSearch(@RequestBody HashMap<String, Object> map) {
-        String tag = map.get("tag").toString();
-        System.out.println(tag);
-        List<PostEntity> posts= postRepository.findByTag(tag);
-        System.out.println(posts);
+        String tag = map.get("tag").toString(); // JSON에서 태그 값 추출
+        System.out.println("검색할 태그: " + tag);
+
+        List<PostEntity> posts = searchService.searchByTag(tag);
+
+        System.out.println("검색된 게시글: " + posts);
         return ResponseEntity.ok(posts);
     }
+
 
     // 피드의 그룹 검색 진행
     @PostMapping("/gid")

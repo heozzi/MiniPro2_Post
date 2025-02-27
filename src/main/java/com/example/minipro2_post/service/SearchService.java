@@ -1,14 +1,20 @@
 package com.example.minipro2_post.service;
 
 import com.example.minipro2_post.entity.PostEntity;
+import com.example.minipro2_post.entity.TagEntity;
 import com.example.minipro2_post.repository.PostRepository;
+import com.example.minipro2_post.repository.PostTagRepository;
+import com.example.minipro2_post.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 검색기능
@@ -20,6 +26,10 @@ import java.util.List;
 public class SearchService {
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private TagRepository tagRepository;
+    @Autowired
+    private PostTagRepository postTagRepository;
 
     @Autowired
     private WebClient.Builder webClientBuilder;
@@ -56,7 +66,17 @@ public class SearchService {
     }
 
     // 태그 검색
-    public List<PostEntity> searchByTag(String tag) {
-        return postRepository.findByTag(tag);
+    public List<PostEntity> searchByTag(String tagName) {
+        // tagName을 기준으로 태그 찾기
+        Optional<TagEntity> tagEntity = tagRepository.findByTagName(tagName);
+
+        // 태그가 존재하면 해당 태그와 연결된 게시글 리스트 반환
+        return tagEntity.map(tag -> postTagRepository.findByTag(tag)
+                .stream()
+                .map(postTag -> postTag.getPost())
+                .collect(Collectors.toList())
+        ).orElse(Collections.emptyList()); // 태그가 없으면 빈 리스트 반환
     }
+
+
 }
