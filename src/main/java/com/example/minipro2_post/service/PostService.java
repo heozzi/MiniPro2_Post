@@ -36,7 +36,7 @@ public class PostService {
     private LikeEventPublisher likeEventPublisher;
 
     // 게시글 생성
-    public PostEntity createPost(PostDto postDto, Long result) {
+    public PostDto createPost(PostDto postDto, Long result) {
         try {
             // 게시글 내용, 타입이 null인 경우 예외 처리
             if(postDto.getContent() == null) {
@@ -81,7 +81,7 @@ public class PostService {
 
             // 이벤트 발행
             postEventPublisher.publishPostEvent(savedPost);
-            return savedPost;
+            return new PostDto(savedPost);
         } catch (DataAccessException e) {
             throw new RuntimeException("게시글 저장 중 오류가 발생했습니다.", e);
         }
@@ -89,7 +89,7 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public Optional<PostEntity> modifyPost(Long pid, PostDto postDto, Long result) {
+    public Optional<PostDto> modifyPost(Long pid, PostDto postDto, Long result) {
         return postRepository.findById(pid)
                 .filter(postEntity -> postEntity.getUid().equals(result))
                 .map(post -> {
@@ -148,7 +148,7 @@ public class PostService {
                     // 새로운 태그 추가
                     post.getPostTags().addAll(tagsToAdd);
 
-                    return postRepository.save(post);
+                    return new PostDto(postRepository.save(post));
                 });
     }
 
