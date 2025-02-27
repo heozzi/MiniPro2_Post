@@ -1,5 +1,6 @@
 package com.example.minipro2_post.controller;
 
+import com.example.minipro2_post.dto.PostDto;
 import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.repository.PostRepository;
 import com.example.minipro2_post.service.SearchService;
@@ -52,35 +53,35 @@ public class SearchController {
         String searchString = map.get("msg").toString();
         System.out.println(type + ": " + searchString);
 
-        List<PostEntity> postEntity = null;
+        List<PostDto> postDtoList = null;
 
         try {
             if("tag".equals(type)) {
-                postEntity = searchService.searchByTag(searchString);
+                postDtoList = searchService.searchByTag(searchString);
             } else if
             ("msg".equals(type)) {
-                postEntity = searchService.search(searchString);
+                postDtoList = searchService.search(searchString);
             } else if ("email".equals(type)) {
-                postEntity = searchService.searchByEmail(searchString);
+                postDtoList = searchService.searchByEmail(searchString);
             }
         } catch (Exception e) {
             return ResponseEntity.ok("해당 이메일을 가진 사용자가 없습니다.");
         }
 
-        if (postEntity == null || postEntity.isEmpty()) {
+        if (postDtoList == null || postDtoList.isEmpty()) {
             return ResponseEntity.ok("검색 결과가 없습니다");
         }
-        return ResponseEntity.ok(postEntity);
+        return ResponseEntity.ok(postDtoList);
     }
 
 
     // 피드의 태그 검색 진행
     @PostMapping("/tag")
-    public ResponseEntity<List<PostEntity>> tagSearch(@RequestBody HashMap<String, Object> map) {
+    public ResponseEntity<List<PostDto>> tagSearch(@RequestBody HashMap<String, Object> map) {
         String tag = map.get("tag").toString(); // JSON에서 태그 값 추출
         System.out.println("검색할 태그: " + tag);
 
-        List<PostEntity> posts = searchService.searchByTag(tag);
+        List<PostDto> posts = searchService.searchByTag(tag);
 
         System.out.println("검색된 게시글: " + posts);
         return ResponseEntity.ok(posts);

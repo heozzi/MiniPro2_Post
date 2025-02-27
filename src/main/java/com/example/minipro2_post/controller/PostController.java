@@ -1,7 +1,6 @@
 package com.example.minipro2_post.controller;
 
 import com.example.minipro2_post.dto.PostDto;
-import com.example.minipro2_post.entity.PostEntity;
 import com.example.minipro2_post.service.PostService;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class PostController {
     // 게시글 작성
     @PostMapping("/create")
     @JsonBackReference
-    public ResponseEntity<PostEntity> createPost(@RequestBody PostDto postDto,
+    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto,
                                                  @RequestHeader("X-Auth-User") String email) {
         Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
                 .post()
@@ -44,7 +43,7 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("/modify/{pid}")
-    public ResponseEntity<PostEntity> modifyPost(@PathVariable Long pid, @RequestBody PostDto postDto,
+    public ResponseEntity<PostDto> modifyPost(@PathVariable Long pid, @RequestBody PostDto postDto,
                                                  @RequestHeader("X-Auth-User") String email) {
         Mono<Long> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
                 .post()
