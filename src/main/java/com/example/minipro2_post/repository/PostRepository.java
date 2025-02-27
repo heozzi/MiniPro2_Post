@@ -16,6 +16,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     List<PostEntity> findByUid(Long uid);
 
+
     // uid로 게시글 삭제
     @Modifying
     @Transactional

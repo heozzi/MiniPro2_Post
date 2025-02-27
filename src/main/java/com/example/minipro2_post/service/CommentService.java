@@ -32,17 +32,18 @@ public class CommentService {
     private CommentEventPublisher commentEventPublisher;
 
     // 댓글 추가
-    public void addComment(CommentDto commentDto, Long pid, Long uid, List<Long> gid) {
+    public void addComment(CommentDto commentDto, Long pid, Long uid, List<Long> gids) {
         Optional<PostEntity> postEntity = postRepository.findById(pid);
-        Boolean uidGidCheck = true;
-//        for (Long gid1 : gid) {
-//            List<PostEntity> postEntity1 = postRepository.findByUidandGid(uid,gid1);
-//            if (!postEntity1.isEmpty()) {
-//                uidGidCheck = true;
-//            }
-//        }
 
-        if (postEntity.isPresent() && uidGidCheck) {
+        Boolean gidCheck = false;
+        // public 확인
+        if (postEntity.get().getGid() ==0L) gidCheck = true;
+
+        for (Long gid:gids) {
+            if (gid == postEntity.get().getGid()) gidCheck = true;
+        }
+        System.out.println(postEntity.isPresent()+" /  "+postEntity.get().getGid() +" / "+gids);
+        if (postEntity.isPresent() && gidCheck ) {
             CommentEntity commentEntity = CommentEntity.builder()
                     .pid(postEntity.get())
                     .uid(commentDto.getUid())
