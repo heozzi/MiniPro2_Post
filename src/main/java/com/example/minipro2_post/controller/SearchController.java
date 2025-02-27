@@ -82,6 +82,16 @@ public class SearchController {
 
 //        System.out.println(result);
 
+//        Mono<List> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
+//                .get()
+//                .uri(uriBuilder -> uriBuilder.path("/user/checkemail")
+//                        .queryParam("email",email).build())
+//                .retrieve()
+//                .bodyToMono(List.class);
+//        List<Long> result = webClient.block();
+
+//        System.out.println(result);
+
         try {
             if("tag".equals(type)) {
                 postDtoList = searchService.searchByTag(searchString);
