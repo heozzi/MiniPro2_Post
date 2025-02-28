@@ -3,7 +3,7 @@ name: Post_CI/CI
 on:
   push:
     branches:
-      - kkb
+      -  main
 jobs:
   cicd-deploy:
     runs-on: ubuntu-latest

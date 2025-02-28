@@ -62,36 +62,6 @@ public class SearchController {
 
         List<PostDto> postDtoList = null;
 
-//        Mono<List> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
-//                .get()
-//                .uri(uriBuilder -> uriBuilder.path("/user/checkemail")
-//                        .queryParam("email",email).build())
-//                .retrieve()
-//                .bodyToMono(List.class);
-//        List<Long> result = webClient.block();
-
-//        System.out.println(result);
-
-//        Mono<List> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
-//                .get()
-//                .uri(uriBuilder -> uriBuilder.path("/user/checkemail")
-//                        .queryParam("email",email).build())
-//                .retrieve()
-//                .bodyToMono(List.class);
-//        List<Long> result = webClient.block();
-
-//        System.out.println(result);
-
-//        Mono<List> webClient = webClientBuilder.baseUrl("http://localhost:8083").build()
-//                .get()
-//                .uri(uriBuilder -> uriBuilder.path("/user/checkemail")
-//                        .queryParam("email",email).build())
-//                .retrieve()
-//                .bodyToMono(List.class);
-//        List<Long> result = webClient.block();
-
-//        System.out.println(result);
-
         try {
             if("tag".equals(type)) {
                 postDtoList = searchService.searchByTag(searchString);
@@ -105,13 +75,13 @@ public class SearchController {
             return ResponseEntity.ok("해당 이메일을 가진 사용자가 없습니다.");
         }
         List<Long> postIds = new ArrayList<>();
-        for (PostEntity postEntity1 : postEntity) {
-            if (!postEntity1.getGid().equals(0)) {
-                postIds.add(postEntity1.getGid());
+        for (PostDto postDto : postDtoList) {
+            if (!postDto.getGid().equals(0)) {
+                postIds.add(postDto.getGid());
             }
         }
         for (int i = postIds.size() - 1; i >= 0; i--) {
-            postEntity.remove(postIds.get(i));
+            postDtoList.remove(postIds.get(i));
         }
 
         if (postDtoList == null || postDtoList.isEmpty()) {
