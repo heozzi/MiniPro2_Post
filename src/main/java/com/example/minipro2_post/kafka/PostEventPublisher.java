@@ -27,6 +27,8 @@ public class PostEventPublisher {
             Map<String, Object> payload = new HashMap<>();
             payload.put("pid", postEntity.getPid());
             payload.put("uid", postEntity.getUid());
+            payload.put("type", postEntity.getType());
+            payload.put("gid", postEntity.getGid());
             payload.put("content", postEntity.getContent());
 
             String jsonMessage = objectMapper.writeValueAsString(payload);

@@ -81,6 +81,7 @@ public class PostService {
             }
 
             // 이벤트 발행
+            System.out.println("PostService : " + savedPost);
             postEventPublisher.publishPostEvent(savedPost);
             return new PostDto(savedPost);
         } catch (DataAccessException e) {
